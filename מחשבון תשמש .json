@@ -1,0 +1,70 @@
+{
+  "package.json": "{\n  \"name\": \"מחשבון תשמש \",\n  \"version\": \"2.0.0\",\n  \"description\": \"\",\n  \"author\": \"\",\n  \"main\": \"index.js\",\n  \"files\": [\n    \"src/\",\n    \"index.js\"\n  ],\n  \"dependencies\": {},\n  \"peerDependencies\": {}\n}",
+  "index.js": "export { Home } from './src/Home';\nexport { DevNotesManager } from './src/DevNotesManager';\nexport { CalculationGuide } from './src/CalculationGuide';\nexport { DeveloperOptionsPage } from './src/DeveloperOptionsPage';\nexport { ProgressBar } from './src/ProgressBar';",
+  "README.md": "# מחשבון תשמש \n\nספרייה שנוצרה באמצעות Code Library Generator\n\n## התקנה\n\n```bash\nnpm install מחשבון תשמש \n```\n\n## שימוש\n\n```javascript\nimport { Home } from 'מחשבון תשמש ';\nimport { DevNotesManager } from 'מחשבון תשמש ';\nimport { CalculationGuide } from 'מחשבון תשמש ';\nimport { DeveloperOptionsPage } from 'מחשבון תשמש ';\nimport { ProgressBar } from 'מחשבון תשמש ';\n```\n\n## רכיבים זמינים\n\n- **Home** (component)\n- **DevNotesManager** (component)\n- **CalculationGuide** (component)\n- **DeveloperOptionsPage** (component)\n- **ProgressBar** (component)\n\n---\nנוצר עם Code Library Generator\n",
+  "components": [
+    {
+      "name": "Home",
+      "type": "component",
+      "code": "export default function Home() {\n  const navigate = useNavigate();\n  const [darkMode, setDarkMode] = useState(false);\n  const [settings, setSettings] = useState({ showDisclaimer: false, showRequirements: true });\n  const [loading, setLoading] = useState(true);\n  useEffect(() => {\n    const fetchSettings = async () => {\n        try {\n            const settingsList = await AppSettings.list();\n            if (settingsList.length > 0) {\n                const { showDisclaimerBox, showRequirementsBox } = settingsList[0];\n                setSettings({ showDisclaimer: showDisclaimerBox, showRequirements: showRequirementsBox });\n            } else {\n                setSettings({ showDisclaimer: false, showRequirements: true });\n            }\n        } catch (error) {\n            console.error(\"Failed to fetch app settings:\", error);\n            setSettings({ showDisclaimer: false, showRequirements: true });\n        } finally {\n            setLoading(false);\n        }\n    };\n    fetchSettings();\n    const checkDarkMode = () => {\n      setDarkMode(document.body.classList.contains('dark-mode'));\n    };\n    checkDarkMode();\n    const observer = new MutationObserver(checkDarkMode);\n    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });\n    return () => observer.disconnect();\n  }, []);\n  if (loading) {\n      return (\n          <div className=\"flex justify-center items-center h-screen\">\n              <RefreshCw className=\"h-8 w-8 animate-spin text-[var(--primary)]\" />\n          </div>\n      );\n  }\n  return (\n    <motion.div\n      initial={{ opacity: 0, y: 20 }}\n      animate={{ opacity: 1, y: 0 }}\n      transition={{ duration: 0.6, ease: \"easeOut\" }}\n      className=\"p-6 md:p-12 flex flex-col items-center justify-center text-center max-w-4xl mx-auto\"\n    >\n      <img \n        src=\"https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/cd9023_3.png\" \n        alt=\"לוגו האפליקציה\" \n        className=\"h-20 w-auto mx-auto mb-6\"\n      />\n      <h1 className={`text-3xl md:text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4 leading-tight`}>\n        ברוכים הבאים<br />למחשבון תשמ\"ש\n      </h1>\n      <p className={`text-lg max-w-2xl mx-auto text-center ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>... (rest of component code)... </p>\n    </motion.div>\n  );\n}",
+      "dependencies": [
+        "useState",
+        "useEffect",
+        "useNavigate",
+        "AppSettings",
+        "motion",
+        "RefreshCw"
+      ],
+      "selected": true
+    },
+    {
+      "name": "DevNotesManager",
+      "type": "component",
+      "code": "const DevNotesManager = ({ darkMode }) => {\n    const [notes, setNotes] = useState([]);\n    const [newNote, setNewNote] = useState('');\n    const [loading, setLoading] = useState(true);\n    useEffect(() => {\n        loadNotes();\n    }, []);\n    const loadNotes = async () => {\n        setLoading(true);\n        const fetchedNotes = await DevNote.list('-created_date');\n        setNotes(fetchedNotes);\n        setLoading(false);\n    };\n    const handleAddNote = async () => {\n        if (!newNote.trim()) return;\n        await DevNote.create({ note: newNote, status: 'פתוח' });\n        setNewNote('');\n        loadNotes();\n    };\n    const handleDeleteNote = async (id) => {\n        await DevNote.delete(id);\n        loadNotes();\n    };\n    const handleStatusChange = async (id, status) => {\n        await DevNote.update(id, { status });\n        loadNotes();\n    };\n    return (\n        <Card className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>... (rest of component code)... </Card>\n    );\n};",
+      "dependencies": [
+        "useState",
+        "useEffect",
+        "DevNote",
+        "Card"
+      ],
+      "selected": true
+    },
+    {
+      "name": "CalculationGuide",
+      "type": "component",
+      "code": "const CalculationGuide = ({ darkMode }) => {\n    const [openGuides, setOpenGuides] = useState({});\n    const toggleGuide = (type) => {\n        setOpenGuides(prev => ({ ...prev, [type]: !prev[type] }));\n    };\n    const guides = { ... }; // omitted for brevity\n    return (\n        <Card className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>... (rest of component code)... </Card>\n    );\n};",
+      "dependencies": [
+        "useState",
+        "Card"
+      ],
+      "selected": true
+    },
+    {
+      "name": "DeveloperOptionsPage",
+      "type": "component",
+      "code": "export default function DeveloperOptionsPage() {\n    const navigate = useNavigate();\n    const [darkMode, setDarkMode] = useState(false);\n    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);\n    const [fileContent, setFileContent] = useState(\"\"\n\t);\n\t const [selectedFile, setSelectedFile] = useState(\"CONSTANTS\");\n    const [activeTab, setActiveTab] = useState(\"display_settings\");\n\t const [loadingSettings, setLoadingSettings] = useState(true);\n\t const [appSettings, setAppSettings] = useState(null);\n\t useEffect(() => { /* ... */ });\n\t const loadSettings = async () => { /* ... */ }; // rest of the function \n\t return (\n\t\t<motion.div className={`min-h-screen ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>... (rest of component code)... </motion.div>\n\t );\n}",
+      "dependencies": [
+        "useNavigate",
+        "useState",
+        "useEffect",
+        "AppSettings",
+        "motion"
+      ],
+      "selected": true
+    },
+    {
+      "name": "ProgressBar",
+      "type": "component",
+      "code": "export default function ProgressBar({ steps, currentStep, darkMode, onStepClick }) {\n  return (\n    <div className={`py-6 px-4 md:px-8 border-b ${darkMode ? 'bg-[#232830] border-[#5D6D53]' : 'bg-[#F7F4EA]'}`}>... (rest of component code)... </div>\n  );\n}",
+      "dependencies": [],
+      "selected": true
+    }
+  ],
+  "src/": {
+    "Home.js": "export default function Home() {\n  const navigate = useNavigate();\n  const [darkMode, setDarkMode] = useState(false);\n  const [settings, setSettings] = useState({ showDisclaimer: false, showRequirements: true });\n  const [loading, setLoading] = useState(true);\n  useEffect(() => {\n    const fetchSettings = async () => {\n        try {\n            const settingsList = await AppSettings.list();\n            if (settingsList.length > 0) {\n                const { showDisclaimerBox, showRequirementsBox } = settingsList[0];\n                setSettings({ showDisclaimer: showDisclaimerBox, showRequirements: showRequirementsBox });\n            } else {\n                setSettings({ showDisclaimer: false, showRequirements: true });\n            }\n        } catch (error) {\n            console.error(\"Failed to fetch app settings:\", error);\n            setSettings({ showDisclaimer: false, showRequirements: true });\n        } finally {\n            setLoading(false);\n        }\n    };\n    fetchSettings();\n    const checkDarkMode = () => {\n      setDarkMode(document.body.classList.contains('dark-mode'));\n    };\n    checkDarkMode();\n    const observer = new MutationObserver(checkDarkMode);\n    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });\n    return () => observer.disconnect();\n  }, []);\n  if (loading) {\n      return (\n          <div className=\"flex justify-center items-center h-screen\">\n              <RefreshCw className=\"h-8 w-8 animate-spin text-[var(--primary)]\" />\n          </div>\n      );\n  }\n  return (\n    <motion.div\n      initial={{ opacity: 0, y: 20 }}\n      animate={{ opacity: 1, y: 0 }}\n      transition={{ duration: 0.6, ease: \"easeOut\" }}\n      className=\"p-6 md:p-12 flex flex-col items-center justify-center text-center max-w-4xl mx-auto\"\n    >\n      <img \n        src=\"https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/cd9023_3.png\" \n        alt=\"לוגו האפליקציה\" \n        className=\"h-20 w-auto mx-auto mb-6\"\n      />\n      <h1 className={`text-3xl md:text-4xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'} mb-4 leading-tight`}>\n        ברוכים הבאים<br />למחשבון תשמ\"ש\n      </h1>\n      <p className={`text-lg max-w-2xl mx-auto text-center ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>... (rest of component code)... </p>\n    </motion.div>\n  );\n}",
+    "DevNotesManager.js": "const DevNotesManager = ({ darkMode }) => {\n    const [notes, setNotes] = useState([]);\n    const [newNote, setNewNote] = useState('');\n    const [loading, setLoading] = useState(true);\n    useEffect(() => {\n        loadNotes();\n    }, []);\n    const loadNotes = async () => {\n        setLoading(true);\n        const fetchedNotes = await DevNote.list('-created_date');\n        setNotes(fetchedNotes);\n        setLoading(false);\n    };\n    const handleAddNote = async () => {\n        if (!newNote.trim()) return;\n        await DevNote.create({ note: newNote, status: 'פתוח' });\n        setNewNote('');\n        loadNotes();\n    };\n    const handleDeleteNote = async (id) => {\n        await DevNote.delete(id);\n        loadNotes();\n    };\n    const handleStatusChange = async (id, status) => {\n        await DevNote.update(id, { status });\n        loadNotes();\n    };\n    return (\n        <Card className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>... (rest of component code)... </Card>\n    );\n};",
+    "CalculationGuide.js": "const CalculationGuide = ({ darkMode }) => {\n    const [openGuides, setOpenGuides] = useState({});\n    const toggleGuide = (type) => {\n        setOpenGuides(prev => ({ ...prev, [type]: !prev[type] }));\n    };\n    const guides = { ... }; // omitted for brevity\n    return (\n        <Card className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>... (rest of component code)... </Card>\n    );\n};",
+    "DeveloperOptionsPage.js": "export default function DeveloperOptionsPage() {\n    const navigate = useNavigate();\n    const [darkMode, setDarkMode] = useState(false);\n    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);\n    const [fileContent, setFileContent] = useState(\"\"\n\t);\n\t const [selectedFile, setSelectedFile] = useState(\"CONSTANTS\");\n    const [activeTab, setActiveTab] = useState(\"display_settings\");\n\t const [loadingSettings, setLoadingSettings] = useState(true);\n\t const [appSettings, setAppSettings] = useState(null);\n\t useEffect(() => { /* ... */ });\n\t const loadSettings = async () => { /* ... */ }; // rest of the function \n\t return (\n\t\t<motion.div className={`min-h-screen ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>... (rest of component code)... </motion.div>\n\t );\n}",
+    "ProgressBar.js": "export default function ProgressBar({ steps, currentStep, darkMode, onStepClick }) {\n  return (\n    <div className={`py-6 px-4 md:px-8 border-b ${darkMode ? 'bg-[#232830] border-[#5D6D53]' : 'bg-[#F7F4EA]'}`}>... (rest of component code)... </div>\n  );\n}"
+  }
+}
